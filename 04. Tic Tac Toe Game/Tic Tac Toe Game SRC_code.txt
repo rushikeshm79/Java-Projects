@@ -1,0 +1,141 @@
+
+
+Setting up the Project Structure:
+Create a new Java project with the following structure:
+
+*********************************************************************************************************
+TicTacToeGame
+
+•	Create a Dynamic Web Project in eclipse.
+
+
+|-- src
+    |-- main
+        |-- java
+            |-- com
+                |-- example
+                    |-- servlets
+                        |-- TicTacToeServlet.java
+|-- WEB-INF
+    |-- web.xml
+|-- index.html
+
+*********************************************************************************************************
+
+1. index.html:
+	Create an HTML file (index.html) with the following content:
+
+*********************************************************************************************************
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <table border="1">
+        <tr>
+            <td onclick="makeMove(0, 0)"></td>
+            <td onclick="makeMove(0, 1)"></td>
+            <td onclick="makeMove(0, 2)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(1, 0)"></td>
+            <td onclick="makeMove(1, 1)"></td>
+            <td onclick="makeMove(1, 2)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(2, 0)"></td>
+            <td onclick="makeMove(2, 1)"></td>
+            <td onclick="makeMove(2, 2)"></td>
+        </tr>
+    </table>
+    <script>
+        function makeMove(row, col) {
+            window.location.href = "/TicTacToeGame/move?row=" + row + "&col=" + col;
+        }
+    </script>
+</body>
+</html>
+*********************************************************************************************************
+
+2.	TicTacToeServlet.java:
+	Create a Java Servlet (TicTacToeServlet.java) to handle the game logic and HTTP requests.
+
+*********************************************************************************************************
+package com.example.servlets;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class TicTacToeServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    private char[][] board = new char[3][3];
+    private char currentPlayer = 'X';
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int row = Integer.parseInt(request.getParameter("row"));
+        int col = Integer.parseInt(request.getParameter("col"));
+
+        if (board[row][col] == '\u0000') { // Check if the cell is empty
+            board[row][col] = currentPlayer;
+            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+        }
+
+        response.sendRedirect("/TicTacToeGame/");
+    }
+
+    @Override
+    public void init() throws ServletException {
+        // Initialize the board with empty cells
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = '\u0000';
+            }
+        }
+    }
+}
+*********************************************************************************************************
+
+3.	web.xml:
+	Configure the web.xml file to map the servlet to the appropriate URL.
+
+*********************************************************************************************************
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>TicTacToeServlet</servlet-name>
+        <servlet-class>com.example.servlets.TicTacToeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TicTacToeServlet</servlet-name>
+        <url-pattern>/move</url-pattern>
+    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>
+*********************************************************************************************************
+
+4.	Deploy the Application:
+Build the project and deploy it on the Tomcat server. After deployment, access the application using the URL http://localhost:8080/TicTacToeGame/.
+
+-->	Explanation:
+
+•	The index.html file represents the front-end of the Tic Tac Toe game. It displays the game board as a 3x3 table, and each cell is clickable. When a player clicks a cell, the JavaScript function makeMove is called, which sends an HTTP GET request to the servlet with the row and column of the selected cell as query parameters.
+
+•	The TicTacToeServlet class is a Java servlet that handles the game logic. It maintains a 2D char array board to represent the Tic Tac Toe game board. The doGet method processes the incoming move request and updates the board accordingly. It then redirects the client back to the index page to update the view with the latest board state.
+
+•	The web.xml file is a deployment descriptor for the web application. It maps the TicTacToeServlet to the URL pattern /move, which allows the servlet to handle incoming requests made to that URL.
+
+Please note that this implementation is very basic and lacks features like checking for a win/draw condition, restarting the game, handling multiple games concurrently, and client-side validation. You can further improve and expand the code to make a complete and robust Tic Tac Toe game.
+
+								***************************THE_END***************************
